@@ -1,6 +1,6 @@
 # SynGenLib
 
-**SynGenLib** is an object-oriented Python library that establishes a framework for defining dataclasses of synchronous generators and their respective step-up transformers. Using these dataclasses, one can define objects that help calculate the power losses of synchronous machines according to the method presented in [1]. Additionally, the library provides functionalities for defining generator capability diagrams based on the system of equations established in [2], with the purpose of calculating reactive power limits.
+**SynGenLib** (Synchronous Generator Library) is an object-oriented Python library that establishes a framework for defining dataclasses of synchronous generators and their respective step-up transformers. Using these dataclasses, one can calculate the power losses and reactive power capability of synchronous machines and their respective step-up transformer. The power loss calculation method is in accordance with [1] for the generator model. The generator reactive power capability is calculated according to [2].
 
 ## Directory Organization
 
@@ -26,9 +26,17 @@ pip install .
 
 These instructions will set up a local copy of the project for development and testing purposes. See the deployment section for notes on how to deploy the project in a live environment.
 
+`SynGenLib` uses an electrical model representation as follows. The figure highlights that there are two types of operating points that can be used for calculations, and the user are free to choose between any of them. In general, the operating point descripes the active power **P**, reactive power **Q**, and terminal voltage **V** at a specific point. Based on these quantities, electrical quantities can be calculated for the whole branch. The **GeneratorOperatingPoint** is used when electrical quantities at the generator terminal is known. The **BranchOperatingPoint** is used when the electrical quantities on the secondary side of the step-up transformer is known. Both inputs will result in a valid output from the calculation model.
+
+![Figure 1](figures/electrical_overview.png "The electrical model used to represent the generator branch. The illustration does not show the inner calculation procedure for the generator.")
+
+The data modelling of `SynGenLib` is illustrated in the figure below. The only mandatory data model is the **GeneratorDataclass** which includes basic parameter of the synchronous machine. **GeneratorLossDataclass** are used to specify power loss properties of the synchronous generator. **CapabilityModelDataclass** are used to define quantities relevant for calculating reactive power limits of the machine. **TransformerDataclass** defines the step-up transformer parameters. The **SaturationBaseClass** or any child classes are used to define the saturation characteristic of the synchronos machine, and defaults to a linear characteristic if not specified. All of these classes are used to define an instance of the calculation object **GeneratorCalculation**. Given an **Operating Point**, the **GeneratorCalculationModel** can output either of the three result dataclasses: **GeneratorBranchResults**, **PowerLossResults**, or **CapabilityResults**.
+
+![Figure 2](figures/program_overview.png "An illustration of the data modelling of SynGenLib.")
+
 ### Prerequisites
 
-SynGenLib doesn't depend on any external Python libraries; only the standard **math** and **dataclasses** modules are used in the `src` folder. If you run examples, you may need **matplotlib** and **numpy**.
+Dependencies for SynGenLib are listed in the TOML file. The notable tools are `numpy` and `scipy`. If you run examples, `matplotlib` is needed.
 
 ## Authors
 

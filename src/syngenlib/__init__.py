@@ -1,5 +1,5 @@
-from syngenlib.data import GeneratorDataClass, GeneratorOperatingPoint, GeneratorLossResult
-from syngenlib.data import TransformerDataClass, TransformerLossResult, TransformerOperatingPoint
-from syngenlib.data import CapabilityResult
-from syngenlib.models import CapabilityDiagram, GeneratorLossModel, TransformerLossModel
+from syngenlib.data import GeneratorDataclass, GeneratorLossDataclass, TransformerDataclass, CapabilityModelDataclass
+from syngenlib.data import GeneratorOperatingPoint, BranchOperatingPoint 
+from syngenlib.models import GeneratorCalculationModel, SaturationBaseClass, LinearSaturationModel
+from syngenlib.data import GeneratorBranchResults, CapabilityResults
  
