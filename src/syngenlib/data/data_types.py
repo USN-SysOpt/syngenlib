@@ -41,3 +41,11 @@ class BranchOperatingPoint(OperatingPoint):
     def __init__(self, P_mw: float, Q_mvar: float, V_pu: float): 
         super().__init__(P_mw, Q_mvar, V_pu) 
 
+
+class PlantOperatingPoint: 
+    """Generator active power (P_mw), generator voltage (V_g), and grid voltage (V_n). """
+    def __init__(self, P_mw: float, V_g: float, V_n: float): 
+        self.P_mw = P_mw
+        self.V_g = V_g
+        self.V_n = V_n
+

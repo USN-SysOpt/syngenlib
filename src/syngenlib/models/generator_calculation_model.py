@@ -1,11 +1,12 @@
-from ..data.data_types import GeneratorOperatingPoint, BranchOperatingPoint 
+from ..data.data_types import GeneratorOperatingPoint, BranchOperatingPoint, PlantOperatingPoint
 from ..data.result_classes import GeneratorBranchResults, PowerLossResult, CapabilityResults
 from ..data.components import GeneratorDataclass, TransformerDataclass, GeneratorLossDataclass, CapabilityModelDataclass
 from .saturation_model import SaturationBaseClass, LinearSaturationModel
 from typing import Optional, Union
-from math import sqrt, atan, atan2, nan, inf
+from math import sqrt, atan, atan2, nan, inf, cos, sin
 import numpy as np 
 from scipy.optimize import root 
+from cmath import phase, polar, rect
 
 class GeneratorCalculationModel: 
     def __init__(self, gen_data: GeneratorDataclass, 
@@ -43,11 +44,13 @@ class GeneratorCalculationModel:
         self._m = atan(self.capability_data.rotor_angle_max_rad)
         self.x_tot_pu = self.trafo_data.X_T + self.gen_data.X_d_u
 
-    def calculate_branch_results(self, operating_point: Union[GeneratorOperatingPoint, BranchOperatingPoint]) -> GeneratorBranchResults: 
+    def calculate_branch_results(self, operating_point: Union[GeneratorOperatingPoint, BranchOperatingPoint, PlantOperatingPoint]) -> GeneratorBranchResults: 
         if type(operating_point) == GeneratorOperatingPoint: 
             res = self._calculate_branch_results_from_gen_op(operating_point)
         elif type(operating_point) == BranchOperatingPoint:
             res = self._calculate_branch_results_from_branch_op(operating_point) 
+        elif type(operating_point) == PlantOperatingPoint:
+            res = self._calculate_branch_results_from_plant_op(operating_point)
         else: 
             raise TypeError("operating_point must be of type GeneratorOperatingPoint or BranchOperatingPoint")
         return res
@@ -60,6 +63,8 @@ class GeneratorCalculationModel:
         I_3_sol = res.x[2] + 1j*res.x[3]
         V_n_sol = res.x[4] + 1j*res.x[5]
 
+        V_g_phase = -phase(V_n_sol)
+
         P_g_pu, Q_g_pu, V_g_pu = op.get_PQV_pu(self.gen_data.S_n_mva)
         S_branch = I_3_sol.conj() * V_n_sol
         P_branch = S_branch.real
@@ -67,7 +72,7 @@ class GeneratorCalculationModel:
         E_q_square = V_g_pu**2 * ((1.0 + self.gen_data.X_d_u * Q_g_pu / (V_g_pu**2))**2 + (self.gen_data.X_d_u * P_g_pu / (V_g_pu**2))**2)
         E_q = sqrt(E_q_square)
         I_f = self.saturation_model.get_field_current(P_g_pu, Q_g_pu, V_g_pu, self.gen_data)
-        return GeneratorBranchResults(P_g_pu, Q_g_pu, P_branch, Q_branch, V_g_pu, abs(V_n_sol), E_q, I_f)
+        return GeneratorBranchResults(P_g_pu, Q_g_pu, P_branch, Q_branch, rect(V_g_pu, V_g_phase), abs(V_n_sol), E_q, I_f)
 
     def _get_gen_op_branch_objective(self, op: GeneratorOperatingPoint): 
         P_g_pu, Q_g_pu, V_g_pu = op.get_PQV_pu(self.gen_data.S_n_mva)
@@ -98,24 +103,76 @@ class GeneratorCalculationModel:
     def _calculate_branch_results_from_branch_op(self, op: BranchOperatingPoint) -> GeneratorBranchResults: 
         P_pu, Q_pu, V_pu = op.get_PQV_pu(self.gen_data.S_n_mva)
         phi = atan2(Q_pu, P_pu)
+
+        n = self.trafo_data.tap_ratio
+        # V_pu = V_pu/n        
+
         I_n = (sqrt(P_pu**2 + Q_pu**2) / V_pu) * np.exp(-1j*phi)
-        vec = np.array([V_pu, I_n])
-        M = np.array([[self.trafo_data.A, self.trafo_data.B], [self.trafo_data.C, self.trafo_data.D]]) 
-        V_g_pu, I_a_pu = np.linalg.solve(M, vec)
-        S_g_pu = V_g_pu * I_a_pu.conjugate()
+        # Try simple: 
+        Z_1 = self.trafo_data.Z_12 
+        Y_1 = self.trafo_data.Y_lv 
+        Y_2 = self.trafo_data.Y_hv 
+        V_g = V_pu + I_n * Z_1 + V_pu * Z_1*Y_2 
+        I_g = (V_pu + I_n*Z_1 + V_pu*Y_2*Z_1)*Y_1 + V_pu*Y_2 + I_n 
+        S_g_pu = V_g * I_g.conjugate()
         P_g_pu = S_g_pu.real
         Q_g_pu = S_g_pu.imag
-        V_g_abs = abs(V_g_pu)
+        V_g_abs = abs(V_g)
+
+        # vec = np.array([V_pu, I_n])
+        # M = np.array([[self.trafo_data.A, self.trafo_data.B], [self.trafo_data.C, self.trafo_data.D]]) 
+        # V_g_pu, I_a_pu = np.linalg.solve(M, vec)
+        # S_g_pu = V_g_pu * I_a_pu.conjugate()
+        # P_g_pu = S_g_pu.real
+        # Q_g_pu = S_g_pu.imag
+        # V_g_abs = abs(V_g_pu)
+
         E_q_square = V_g_abs**2 * ((1.0 + self.gen_data.X_d_u * Q_g_pu / (V_g_abs**2))**2 + (self.gen_data.X_d_u * P_g_pu / (V_g_abs**2))**2)
         E_q = sqrt(E_q_square)
         I_f = self.saturation_model.get_field_current(P_g_pu, Q_g_pu, V_g_abs, self.gen_data)
-        return GeneratorBranchResults(P_g_pu, Q_g_pu, P_pu, Q_pu, V_g_pu, V_pu, E_q, I_f)
+        return GeneratorBranchResults(P_g_pu, Q_g_pu, P_pu, Q_pu, V_g, V_pu*n, E_q, I_f)
     
-    def get_branch_losses(self, op: Union[GeneratorOperatingPoint, BranchOperatingPoint]) -> PowerLossResult: 
+    def _calculate_branch_results_from_plant_op(self, op: PlantOperatingPoint) -> GeneratorBranchResults:
+        P_g_pu = op.P_mw / self.gen_data.S_n_mva
+        Y_trafo = 1.0/self.trafo_data.Z_12
+        Y_11 = Y_trafo + self.trafo_data.Y_lv 
+        Y_12 = -Y_trafo
+        Y_21 = -Y_trafo 
+        Y_22 = Y_trafo + self.trafo_data.Y_hv # *self.trafo_data.tap_ratio**2
+        Y_bus = np.array([[Y_11, Y_12], [Y_21, Y_22]])
+        G_bus = Y_bus.real
+        B_bus = Y_bus.imag
+        V_n = op.V_n #/ self.trafo_data.tap_ratio
+
+        def objective(delta_g): 
+            P_g_calc = op.V_g**2 * G_bus[0,0] + V_n*op.V_g*(G_bus[0, 1] * cos(delta_g) + B_bus[0, 1] * sin(delta_g))
+            return np.array([P_g_pu - P_g_calc])
+        
+        res = root(objective, np.array([0.0])) 
+        if not res.success:
+            raise ValueError("Root finding failed. Check the input values.")
+        delta_g = res.x[0]
+        V_g_pu = op.V_g * (cos(delta_g) + 1j*sin(delta_g))
+        v_vec = np.array([V_g_pu, V_n]) 
+        i_inj = Y_bus @ v_vec 
+        s_inj = v_vec * i_inj.conjugate() 
+        # P_g_pu = op.V_g**2 * G_gg + V_n*op.V_g * (-Y_12.real * cos(delta_g) - Y_12.imag * sin(delta_g))
+        # P_pu = V_n**2 * G_nn      + V_n*op.V_g * (-Y_21.real * cos(-delta_g) - Y_21.imag * sin(-delta_g))
+        P_g_pu = s_inj[0].real
+        Q_g_pu = s_inj[0].imag
+        P_pu = -s_inj[1].real
+        Q_pu = -s_inj[1].imag
+        
+        return GeneratorBranchResults(P_g_pu, Q_g_pu, P_pu, Q_pu, V_g_pu, op.V_n, 0.0, 0.0) 
+
+    
+    def get_branch_losses(self, op: Union[GeneratorOperatingPoint, BranchOperatingPoint, PlantOperatingPoint]) -> PowerLossResult: 
         if type(op) == GeneratorOperatingPoint: 
             res = self._calculate_branch_results_from_gen_op(op)
         elif type(op) == BranchOperatingPoint:
-            res = self._calculate_branch_results_from_branch_op(op) 
+            res = self._calculate_branch_results_from_branch_op(op)
+        elif type(op) == PlantOperatingPoint:
+            res = self._calculate_branch_results_from_plant_op(op) 
         else: 
             raise TypeError("operating_point must be of type GeneratorOperatingPoint or BranchOperatingPoint")
         
@@ -134,14 +191,21 @@ class GeneratorCalculationModel:
             
         Returns:
             CapabilityResults: A dataclass containing the reactive power limits and validation checks.
+
+        Note: 
+            You can not use the PlantOperatingPoint for this function.
         """
         if type(operating_point) == GeneratorOperatingPoint: 
             res = self._calculate_branch_results_from_gen_op(operating_point)
             P = res.P_branch_pu 
             V = res.V_grid_pu 
-        else: 
+        elif type(operating_point) == BranchOperatingPoint: 
             P = operating_point.P_mw / self.gen_data.S_n_mva
             V = operating_point.V_pu 
+        elif type(operating_point) == PlantOperatingPoint:
+            raise ValueError("PlantOperatingPoint is not supported for this function.")
+        else:
+            raise TypeError("operating_point must be of type GeneratorOperatingPoint or BranchOperatingPoint")
 
         valid_P = self.capability_data.P_min_pu <= P <= self.capability_data.P_max_pu 
         Q_min_1, Q_max_1, valid_stator = self._get_stator_limits_pu(P, V) 
