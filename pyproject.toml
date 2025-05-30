@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools", "wheel", "setuptools_scm>=6.2"] 
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "syngenlib"
+description = "A library for calculating steady-state efficiency and capability of synchronous machines."
+version = "1.0.0"
+requires-python = ">=3.10.0"
+license = {file = "LICENSE"}
+
+dependencies = [
+    "numpy", 
+    "scipy",
+]
+
+[project.optional-dependencies]
+
+examples = [
+    "matplotlib",
+    "numpy",
+]
