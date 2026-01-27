@@ -1,0 +1,35 @@
+{
+    "name": "103 MVA Hydrogenerator",
+    "description": "Generator data from the paper: Loss Modeling of Large Hydrogenerators for Cost Estimation of Reactive Power Services and Identification of Optimal Operation",
+    "reference": "Øgaard et al.",
+    
+    "nameplate_data": {
+        "S_n_mva": 103.0,
+        "V_n_kv": 11.0,
+        "cos_phi": 0.9
+    },
+    
+    "electrical_parameters": {
+        "X_d_pu": 1.059,
+        "X_q_pu": 0.676,
+        "R_a_pu": 0.00182
+    },
+    
+    "loss_components_kw": {
+        "stator_copper": 276.62,
+        "rotor_copper": 191.66,
+        "core": 211.92,
+        "mechanical": 413.82
+    },
+    
+    "saturation_model": {
+        "type": "NonLinearSaturationModel1",
+        "parameters": {
+            "b_v": 1.0,
+            "k": 1.0308,
+            "C_m": 0.16,
+            "n": 7,
+            "X_p_pu": 0.141
+        }
+    }
+}

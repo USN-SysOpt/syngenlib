@@ -1,0 +1,493 @@
+================================================================================
+WORKED EXAMPLE: 103 MVA HYDROGENERATOR POWER LOSS ESTIMATION
+================================================================================
+Configuration: config_103_mva_generator.json
+Operating points: operating_points_103_mva.json
+Output: worked_example_config_103_mva_generator_output_20260127_192436.txt
+
+SECTION 1: CREATE GENERATOR MODEL FROM CONFIGURATION
+--------------------------------------------------------------------------------
+Creating GeneratorDataclass...
+  S_n_mva:  103.0 MVA
+  V_nom_kV: 11.0 kV
+  cos_phi:  0.9
+  X_d_u:    1.059 pu
+  X_q_u:    0.676 pu
+  R_a:      0.00182 pu
+
+Creating GeneratorLossDataclass...
+  P_loss_nom_stator_pu: 0.00268563 pu (276.62 kW)
+  P_loss_nom_rotor_pu:  0.00186078 pu (191.66 kW)
+  P_loss_nom_core_pu:   0.00205748 pu (211.92 kW)
+  P_loss_nom_const_pu:  0.00401767 pu (413.82 kW)
+
+Creating NonLinearSaturationModel1...
+  b_v:   1.0
+  k:     1.0308
+  C_m:   0.16
+  n:     7
+  X_p:   0.141 pu
+
+Creating BranchCalculationModel...
+  Model initialized successfully
+  E_q_nom: 1.744906 pu
+
+SECTION 2: CREATE OPERATING POINTS
+--------------------------------------------------------------------------------
+Loading 8 operating points...
+
+OP1:
+  GeneratorOperatingPoint:
+    P_mw:      92.7000 MW
+    Q_mvar:    44.8977 Mvar
+    V_kv:      11.0000 kV
+
+OP2:
+  GeneratorOperatingPoint:
+    P_mw:      69.5250 MW
+    Q_mvar:    33.6707 Mvar
+    V_kv:      11.0000 kV
+
+OP3:
+  GeneratorOperatingPoint:
+    P_mw:      46.3500 MW
+    Q_mvar:    22.4540 Mvar
+    V_kv:      11.0000 kV
+
+OP4:
+  GeneratorOperatingPoint:
+    P_mw:      23.1750 MW
+    Q_mvar:    11.2270 Mvar
+    V_kv:      11.0000 kV
+
+OP5:
+  GeneratorOperatingPoint:
+    P_mw:     103.0000 MW
+    Q_mvar:     0.0000 Mvar
+    V_kv:      11.0000 kV
+
+OP6:
+  GeneratorOperatingPoint:
+    P_mw:      77.2500 MW
+    Q_mvar:     0.0000 Mvar
+    V_kv:      11.0000 kV
+
+OP7:
+  GeneratorOperatingPoint:
+    P_mw:      51.5000 MW
+    Q_mvar:     0.0000 Mvar
+    V_kv:      11.0000 kV
+
+OP8:
+  GeneratorOperatingPoint:
+    P_mw:      25.7500 MW
+    Q_mvar:     0.0000 Mvar
+    V_kv:      11.0000 kV
+
+================================================================================
+SECTION 3: SYNGENLIB FUNCTION CALLS AND RESULTS
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+Operating Point: OP1
+────────────────────────────────────────────────────────────────────────────────
+
+>>> branch_results = gen_model.get_branch_results(op)
+  GeneratorBranchResults:
+    P_g_mw:            92.7000 MW
+    Q_g_mvar:          44.8977 Mvar
+    V_g_kv:            11.0000 kV
+    P_branch_mw:       92.7000 MW
+    Q_branch_mvar:     44.8977 Mvar
+    V_grid_kv:         11.0000 kV
+
+>>> E_q = gen_model.get_E_q(op)
+  E_q: 1.744915 pu
+
+>>> loss_results = gen_model.get_branch_losses(op)
+  PowerLossResult:
+    P_loss_stator_mw:   276.6224 kW
+    P_loss_rotor_mw:    191.6622 kW
+    P_loss_core_mw:     211.9200 kW
+    P_loss_const_mw:    413.8200 kW
+    trafo_loss_mw:        0.0000 kW
+    ────────────────────────────
+    P_loss_gen_mw:     1094.0246 kW (total generator)
+    P_loss_branch_mw:  1094.0246 kW (total branch)
+
+>>> capability = gen_model.get_capability_limits(op)
+  CapabilityResults:
+    Q_min_tot:       -44.8967 Mvar (effective minimum)
+    Q_max_tot:        44.8967 Mvar (effective maximum)
+    ────────────────────────────
+    Q_stator_min:    -44.8967 Mvar
+    Q_stator_max:     44.8967 Mvar
+    Q_rotor_max:      44.8967 Mvar
+    Q_stab_min:      -52.5479 Mvar
+    Q_v_min:       -514999952.8574 Mvar
+    Q_v_max:       515000042.6528 Mvar
+
+  Efficiency: η = 98.8336%
+
+────────────────────────────────────────────────────────────────────────────────
+Operating Point: OP2
+────────────────────────────────────────────────────────────────────────────────
+
+>>> branch_results = gen_model.get_branch_results(op)
+  GeneratorBranchResults:
+    P_g_mw:            69.5250 MW
+    Q_g_mvar:          33.6707 Mvar
+    V_g_kv:            11.0000 kV
+    P_branch_mw:       69.5250 MW
+    Q_branch_mvar:     33.6707 Mvar
+    V_grid_kv:         11.0000 kV
+
+>>> E_q = gen_model.get_E_q(op)
+  E_q: 1.524203 pu
+
+>>> loss_results = gen_model.get_branch_losses(op)
+  PowerLossResult:
+    P_loss_stator_mw:   155.5956 kW
+    P_loss_rotor_mw:    147.4974 kW
+    P_loss_core_mw:     211.9200 kW
+    P_loss_const_mw:    413.8200 kW
+    trafo_loss_mw:        0.0000 kW
+    ────────────────────────────
+    P_loss_gen_mw:      928.8330 kW (total generator)
+    P_loss_branch_mw:   928.8330 kW (total branch)
+
+>>> capability = gen_model.get_capability_limits(op)
+  CapabilityResults:
+    Q_min_tot:       -63.7263 Mvar (effective minimum)
+    Q_max_tot:        57.5561 Mvar (effective maximum)
+    ────────────────────────────
+    Q_stator_min:    -75.9952 Mvar
+    Q_stator_max:     75.9952 Mvar
+    Q_rotor_max:      57.5561 Mvar
+    Q_stab_min:      -63.7263 Mvar
+    Q_v_min:       -514999964.6458 Mvar
+    Q_v_max:       515000031.9872 Mvar
+
+  Efficiency: η = 98.6816%
+
+────────────────────────────────────────────────────────────────────────────────
+Operating Point: OP3
+────────────────────────────────────────────────────────────────────────────────
+
+>>> branch_results = gen_model.get_branch_results(op)
+  GeneratorBranchResults:
+    P_g_mw:            46.3500 MW
+    Q_g_mvar:          22.4540 Mvar
+    V_g_kv:            11.0000 kV
+    P_branch_mw:       46.3500 MW
+    Q_branch_mvar:     22.4540 Mvar
+    V_grid_kv:         11.0000 kV
+
+>>> E_q = gen_model.get_E_q(op)
+  E_q: 1.319894 pu
+
+>>> loss_results = gen_model.get_branch_losses(op)
+  PowerLossResult:
+    P_loss_stator_mw:    69.1616 kW
+    P_loss_rotor_mw:    112.2665 kW
+    P_loss_core_mw:     211.9200 kW
+    P_loss_const_mw:    413.8200 kW
+    trafo_loss_mw:        0.0000 kW
+    ────────────────────────────
+    P_loss_gen_mw:      807.1681 kW (total generator)
+    P_loss_branch_mw:   807.1681 kW (total branch)
+
+>>> capability = gen_model.get_capability_limits(op)
+  CapabilityResults:
+    Q_min_tot:       -74.9047 Mvar (effective minimum)
+    Q_max_tot:        65.9987 Mvar (effective maximum)
+    ────────────────────────────
+    Q_stator_min:    -91.9819 Mvar
+    Q_stator_max:     91.9819 Mvar
+    Q_rotor_max:      65.9987 Mvar
+    Q_stab_min:      -74.9047 Mvar
+    Q_v_min:       -514999976.4233 Mvar
+    Q_v_max:       515000021.3313 Mvar
+
+  Efficiency: η = 98.2883%
+
+────────────────────────────────────────────────────────────────────────────────
+Operating Point: OP4
+────────────────────────────────────────────────────────────────────────────────
+
+>>> branch_results = gen_model.get_branch_results(op)
+  GeneratorBranchResults:
+    P_g_mw:            23.1750 MW
+    Q_g_mvar:          11.2270 Mvar
+    V_g_kv:            11.0000 kV
+    P_branch_mw:       23.1750 MW
+    Q_branch_mvar:     11.2270 Mvar
+    V_grid_kv:         11.0000 kV
+
+>>> E_q = gen_model.get_E_q(op)
+  E_q: 1.140597 pu
+
+>>> loss_results = gen_model.get_branch_losses(op)
+  PowerLossResult:
+    P_loss_stator_mw:    17.2904 kW
+    P_loss_rotor_mw:     85.4631 kW
+    P_loss_core_mw:     211.9200 kW
+    P_loss_const_mw:    413.8200 kW
+    trafo_loss_mw:        0.0000 kW
+    ────────────────────────────
+    P_loss_gen_mw:      728.4935 kW (total generator)
+    P_loss_branch_mw:   728.4935 kW (total branch)
+
+>>> capability = gen_model.get_capability_limits(op)
+  CapabilityResults:
+    Q_min_tot:       -86.0832 Mvar (effective minimum)
+    Q_max_tot:        70.8609 Mvar (effective maximum)
+    ────────────────────────────
+    Q_stator_min:   -100.3590 Mvar
+    Q_stator_max:    100.3590 Mvar
+    Q_rotor_max:      70.8609 Mvar
+    Q_stab_min:      -86.0832 Mvar
+    Q_v_min:       -514999988.2117 Mvar
+    Q_v_max:       515000010.6656 Mvar
+
+  Efficiency: η = 96.9524%
+
+────────────────────────────────────────────────────────────────────────────────
+Operating Point: OP5
+────────────────────────────────────────────────────────────────────────────────
+
+>>> branch_results = gen_model.get_branch_results(op)
+  GeneratorBranchResults:
+    P_g_mw:           103.0000 MW
+    Q_g_mvar:           0.0000 Mvar
+    V_g_kv:            11.0000 kV
+    P_branch_mw:      103.0000 MW
+    Q_branch_mvar:     -0.0000 Mvar
+    V_grid_kv:         11.0000 kV
+
+>>> E_q = gen_model.get_E_q(op)
+  E_q: 1.456530 pu
+
+>>> loss_results = gen_model.get_branch_losses(op)
+  PowerLossResult:
+    P_loss_stator_mw:   276.6200 kW
+    P_loss_rotor_mw:    124.2660 kW
+    P_loss_core_mw:     211.9200 kW
+    P_loss_const_mw:    413.8200 kW
+    trafo_loss_mw:        0.0000 kW
+    ────────────────────────────
+    P_loss_gen_mw:     1026.6260 kW (total generator)
+    P_loss_branch_mw:  1026.6260 kW (total branch)
+
+>>> capability = gen_model.get_capability_limits(op)
+  CapabilityResults:
+    Q_min_tot:        -0.0000 Mvar (effective minimum)
+    Q_max_tot:         0.0000 Mvar (effective maximum)
+    ────────────────────────────
+    Q_stator_min:     -0.0000 Mvar
+    Q_stator_max:      0.0000 Mvar
+    Q_rotor_max:      37.6208 Mvar
+    Q_stab_min:      -47.5797 Mvar
+    Q_v_min:       -515000000.0000 Mvar
+    Q_v_max:       515000000.0000 Mvar
+
+  Efficiency: η = 99.0131%
+
+────────────────────────────────────────────────────────────────────────────────
+Operating Point: OP6
+────────────────────────────────────────────────────────────────────────────────
+
+>>> branch_results = gen_model.get_branch_results(op)
+  GeneratorBranchResults:
+    P_g_mw:            77.2500 MW
+    Q_g_mvar:           0.0000 Mvar
+    V_g_kv:            11.0000 kV
+    P_branch_mw:       77.2500 MW
+    Q_branch_mvar:     -0.0000 Mvar
+    V_grid_kv:         11.0000 kV
+
+>>> E_q = gen_model.get_E_q(op)
+  E_q: 1.277041 pu
+
+>>> loss_results = gen_model.get_branch_losses(op)
+  PowerLossResult:
+    P_loss_stator_mw:   155.5987 kW
+    P_loss_rotor_mw:     98.8409 kW
+    P_loss_core_mw:     211.9200 kW
+    P_loss_const_mw:    413.8200 kW
+    trafo_loss_mw:        0.0000 kW
+    ────────────────────────────
+    P_loss_gen_mw:      880.1796 kW (total generator)
+    P_loss_branch_mw:   880.1796 kW (total branch)
+
+>>> capability = gen_model.get_capability_limits(op)
+  CapabilityResults:
+    Q_min_tot:       -60.0002 Mvar (effective minimum)
+    Q_max_tot:        53.8499 Mvar (effective maximum)
+    ────────────────────────────
+    Q_stator_min:    -68.1281 Mvar
+    Q_stator_max:     68.1281 Mvar
+    Q_rotor_max:      53.8499 Mvar
+    Q_stab_min:      -60.0002 Mvar
+    Q_v_min:       -515000000.0000 Mvar
+    Q_v_max:       515000000.0000 Mvar
+
+  Efficiency: η = 98.8734%
+
+────────────────────────────────────────────────────────────────────────────────
+Operating Point: OP7
+────────────────────────────────────────────────────────────────────────────────
+
+>>> branch_results = gen_model.get_branch_results(op)
+  GeneratorBranchResults:
+    P_g_mw:            51.5000 MW
+    Q_g_mvar:           0.0000 Mvar
+    V_g_kv:            11.0000 kV
+    P_branch_mw:       51.5000 MW
+    Q_branch_mvar:     -0.0000 Mvar
+    V_grid_kv:         11.0000 kV
+
+>>> E_q = gen_model.get_E_q(op)
+  E_q: 1.131534 pu
+
+>>> loss_results = gen_model.get_branch_losses(op)
+  PowerLossResult:
+    P_loss_stator_mw:    69.1550 kW
+    P_loss_rotor_mw:     80.9006 kW
+    P_loss_core_mw:     211.9200 kW
+    P_loss_const_mw:    413.8200 kW
+    trafo_loss_mw:        0.0000 kW
+    ────────────────────────────
+    P_loss_gen_mw:      775.7956 kW (total generator)
+    P_loss_branch_mw:   775.7956 kW (total branch)
+
+>>> capability = gen_model.get_capability_limits(op)
+  CapabilityResults:
+    Q_min_tot:       -72.4206 Mvar (effective minimum)
+    Q_max_tot:        64.4481 Mvar (effective maximum)
+    ────────────────────────────
+    Q_stator_min:    -89.2006 Mvar
+    Q_stator_max:     89.2006 Mvar
+    Q_rotor_max:      64.4481 Mvar
+    Q_stab_min:      -72.4206 Mvar
+    Q_v_min:       -515000000.0000 Mvar
+    Q_v_max:       515000000.0000 Mvar
+
+  Efficiency: η = 98.5160%
+
+────────────────────────────────────────────────────────────────────────────────
+Operating Point: OP8
+────────────────────────────────────────────────────────────────────────────────
+
+>>> branch_results = gen_model.get_branch_results(op)
+  GeneratorBranchResults:
+    P_g_mw:            25.7500 MW
+    Q_g_mvar:           0.0000 Mvar
+    V_g_kv:            11.0000 kV
+    P_branch_mw:       25.7500 MW
+    Q_branch_mvar:     -0.0000 Mvar
+    V_grid_kv:         11.0000 kV
+
+>>> E_q = gen_model.get_E_q(op)
+  E_q: 1.034453 pu
+
+>>> loss_results = gen_model.get_branch_losses(op)
+  PowerLossResult:
+    P_loss_stator_mw:    17.2888 kW
+    P_loss_rotor_mw:     70.2355 kW
+    P_loss_core_mw:     211.9200 kW
+    P_loss_const_mw:    413.8200 kW
+    trafo_loss_mw:        0.0000 kW
+    ────────────────────────────
+    P_loss_gen_mw:      713.2642 kW (total generator)
+    P_loss_branch_mw:   713.2642 kW (total branch)
+
+>>> capability = gen_model.get_capability_limits(op)
+  CapabilityResults:
+    Q_min_tot:       -84.8411 Mvar (effective minimum)
+    Q_max_tot:        70.4858 Mvar (effective maximum)
+    ────────────────────────────
+    Q_stator_min:    -99.7293 Mvar
+    Q_stator_max:     99.7293 Mvar
+    Q_rotor_max:      70.4858 Mvar
+    Q_stab_min:      -84.8411 Mvar
+    Q_v_min:       -515000000.0000 Mvar
+    Q_v_max:       515000000.0000 Mvar
+
+  Efficiency: η = 97.3047%
+
+================================================================================
+SECTION 4: SUMMARY TABLE
+================================================================================
+
+OP          P[MW]   Q[Mvar]  E_q[pu]  P_loss[kW]     η[%]    Q_min    Q_max
+--------------------------------------------------------------------------------
+OP1         92.70     44.90   1.7449     1094.02  98.8336   -44.90    44.90
+OP2         69.53     33.67   1.5242      928.83  98.6816   -63.73    57.56
+OP3         46.35     22.45   1.3199      807.17  98.2883   -74.90    66.00
+OP4         23.18     11.23   1.1406      728.49  96.9524   -86.08    70.86
+OP5        103.00      0.00   1.4565     1026.63  99.0131    -0.00     0.00
+OP6         77.25      0.00   1.2770      880.18  98.8734   -60.00    53.85
+OP7         51.50      0.00   1.1315      775.80  98.5160   -72.42    64.45
+OP8         25.75      0.00   1.0345      713.26  97.3047   -84.84    70.49
+
+================================================================================
+SECTION 5: VALIDATION AGAINST REFERENCE
+================================================================================
+
+OP       Component       SynGenLib    Reference      Δ[kW]     Δ[%]
+----------------------------------------------------------------------
+OP1      Stator             276.62       276.62       0.00     0.00
+         Rotor              191.66       191.66       0.00     0.00
+         Core               211.92       211.92       0.00     0.00
+         Const              413.82       413.82       0.00     0.00
+         TOTAL             1094.02      1094.02       0.00     0.00
+----------------------------------------------------------------------
+OP2      Stator             155.60       155.60      -0.00    -0.00
+         Rotor              147.50       148.55      -1.05    -0.71
+         Core               211.92       211.92       0.00     0.00
+         Const              413.82       413.82       0.00     0.00
+         TOTAL              928.83       929.89      -1.06    -0.11
+----------------------------------------------------------------------
+OP3      Stator              69.16        69.16       0.00     0.00
+         Rotor              112.27       113.96      -1.69    -1.49
+         Core               211.92       211.92       0.00     0.00
+         Const              413.82       413.82       0.00     0.00
+         TOTAL              807.17       808.86      -1.69    -0.21
+----------------------------------------------------------------------
+OP4      Stator              17.29        17.29       0.00     0.00
+         Rotor               85.46        87.48      -2.02    -2.31
+         Core               211.92       211.92       0.00     0.00
+         Const              413.82       413.82       0.00     0.00
+         TOTAL              728.49       730.51      -2.02    -0.28
+----------------------------------------------------------------------
+OP5      Stator             276.62       276.62       0.00     0.00
+         Rotor              124.27       129.69      -5.42    -4.18
+         Core               211.92       211.92       0.00     0.00
+         Const              413.82       413.82       0.00     0.00
+         TOTAL             1026.63      1032.05      -5.42    -0.53
+----------------------------------------------------------------------
+OP6      Stator             155.60       155.60      -0.00    -0.00
+         Rotor               98.84       103.46      -4.62    -4.46
+         Core               211.92       211.92       0.00     0.00
+         Const              413.82       413.82       0.00     0.00
+         TOTAL              880.18       884.80      -4.62    -0.52
+----------------------------------------------------------------------
+OP7      Stator              69.16        69.16      -0.00    -0.01
+         Rotor               80.90        84.56      -3.66    -4.33
+         Core               211.92       211.92       0.00     0.00
+         Const              413.82       413.82       0.00     0.00
+         TOTAL              775.80       779.46      -3.66    -0.47
+----------------------------------------------------------------------
+OP8      Stator              17.29        17.29      -0.00    -0.01
+         Rotor               70.24        73.02      -2.78    -3.81
+         Core               211.92       211.92       0.00     0.00
+         Const              413.82       413.82       0.00     0.00
+         TOTAL              713.26       716.05      -2.79    -0.39
+----------------------------------------------------------------------
+
+================================================================================
+END OF WORKED EXAMPLE
+================================================================================
+
+Results saved to: worked_example_config_103_mva_generator_output_20260127_192436.txt

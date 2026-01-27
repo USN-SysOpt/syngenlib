@@ -1,0 +1,26 @@
+{
+    "description": "Operating points for the 103 MVA hydrogenerator worked example",
+    "reference_generator": "config_103_mva_generator.json",
+    
+    "operating_points": [
+        {"name": "OP1", "P_pu": 0.9, "Q_pu": 0.4359, "V_pu": 1.0},
+        {"name": "OP2", "P_pu": 0.675, "Q_pu": 0.3269, "V_pu": 1.0},
+        {"name": "OP3", "P_pu": 0.45, "Q_pu": 0.2180, "V_pu": 1.0},
+        {"name": "OP4", "P_pu": 0.225, "Q_pu": 0.1090, "V_pu": 1.0},
+        {"name": "OP5", "P_pu": 1.0, "Q_pu": 0.0, "V_pu": 1.0},
+        {"name": "OP6", "P_pu": 0.75, "Q_pu": 0.0, "V_pu": 1.0},
+        {"name": "OP7", "P_pu": 0.5, "Q_pu": 0.0, "V_pu": 1.0},
+        {"name": "OP8", "P_pu": 0.25, "Q_pu": 0.0, "V_pu": 1.0}
+    ],
+    
+    "reference_losses_kw": {
+        "OP1": {"stator": 276.62, "rotor": 191.66, "core": 211.92, "const": 413.82},
+        "OP2": {"stator": 155.60, "rotor": 148.55, "core": 211.92, "const": 413.82},
+        "OP3": {"stator": 69.16, "rotor": 113.96, "core": 211.92, "const": 413.82},
+        "OP4": {"stator": 17.29, "rotor": 87.48, "core": 211.92, "const": 413.82},
+        "OP5": {"stator": 276.62, "rotor": 129.69, "core": 211.92, "const": 413.82},
+        "OP6": {"stator": 155.60, "rotor": 103.46, "core": 211.92, "const": 413.82},
+        "OP7": {"stator": 69.16, "rotor": 84.56, "core": 211.92, "const": 413.82},
+        "OP8": {"stator": 17.29, "rotor": 73.02, "core": 211.92, "const": 413.82}
+    }
+}
