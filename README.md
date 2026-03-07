@@ -38,6 +38,18 @@ The data modelling of `SynGenLib` is illustrated in the figure below. The only m
 
 Dependencies for SynGenLib are listed in the TOML file. The notable tools are `numpy` and `scipy`. If you run examples, `matplotlib` is needed.
 
+## Platform Compatibility
+
+The following table summarizes the operating systems on which SynGenLib has been successfully tested and confirmed to execute correctly.
+
+| Operating System | Version      | Status  |
+|------------------|--------------|---------|
+| Windows          | 11           | ✅ Tested |
+
+Testing on additional platforms (e.g. Linux, macOS) has not yet been performed. As SynGenLib depends only on cross-platform Python packages (`numpy`, `scipy`, `matplotlib`), it is expected to be compatible with any platform that supports a standard Python environment, but this has not been formally verified.
+
+Contributions verifying compatibility on additional operating systems are welcome.
+
 ### Roadmap
 
 SynGenLib is per summer 2025 under active use and development. It is likely that modifications and changes to the source code is not backwards compatible. The following list summarizes possible future additions to SynGenLib.
